@@ -10,9 +10,27 @@ exports.headers = headers = {
   'Content-Type': "text/html"
 };
 
-exports.serveAssets = function(res, asset) {
-  // Write some code here that helps serve up your static files!
-  // (Static files are things like html (yours or archived from others...), css, or anything that doesn't change often.)
+exports.serveAssets = function(res, reqUrl) {
+  // asset urls
+  if (reqUrl.indexOf('index.html') > -1) {
+    // index.html - edge case
+    filePath = archive.paths.siteAssets + reqUrl;
+    return this.readFiles(filePath);
+  } else {
+    // check if there's content to serve
+    if ( archive.isUrlInList(reqUrl) ) {
+      filePath = archive.paths.archivedSites + reqUrl;
+      return this.readFiles(filePath);
+    } else {
+      filePath = archive.paths.siteAssets + '/loading.html';
+      return this.readFiles(filePath);
+    }
+  }
 };
 
 // As you progress, keep thinking about what helper functions you can put here!
+
+exports.readFiles = function(filePath) {
+  return fs.readFileSync(filePath);
+};
+
